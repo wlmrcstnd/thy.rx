@@ -51,7 +51,7 @@ function createTextTexture(gl, text, font = "bold 30px monospace", color = "blac
 }
 
 class Title {
-  constructor({ gl, plane, renderer, text, subtitle, textColor = "#545050", font = "30px sans-serif" }) {
+  constructor({ gl, plane, renderer, text, subtitle, textColor = "#545050", font = "30px Funnel Display" }) {
     autoBind(this)
     this.gl = gl
     this.plane = plane
@@ -332,7 +332,13 @@ class Media {
 }
 
 class App {
-  constructor(container, { items, bend, textColor = "#ffffff", borderRadius = 0, font = "bold 30px DM Sans" } = {}) {
+  constructor(container, { 
+    items, 
+    bend, 
+    textColor = "#ffffff", 
+    borderRadius = 0, 
+    font = "bold 30px system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif" 
+  } = {}) {
     document.documentElement.classList.remove('no-js')
     this.container = container
     this.scroll = { ease: 0.05, current: 0, target: 0, last: 0 }
@@ -497,10 +503,10 @@ class App {
 
 export default function CircularGallery({
   items,
-  bend = 3,
+  bend = 0,
   textColor = "#ffffff",
   borderRadius = 0.05,
-  font = "bold 30px DM Sans"
+  font = "bold 30px system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif"
 }) {
   const containerRef = useRef(null)
   useEffect(() => {

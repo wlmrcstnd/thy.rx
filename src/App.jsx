@@ -227,8 +227,7 @@ if (Math.random() < 0.1) { // 10% chance
         loading={loading}
         progress={progress}
         currentState={currentLoadingState}
-        duration={500}
-        loop={true}
+        loop={false}
       />
       
       {!loading && (

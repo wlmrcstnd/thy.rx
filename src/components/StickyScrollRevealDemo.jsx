@@ -225,7 +225,7 @@ export function StickyScrollRevealDemo() {
                   </div>
 
           <div style={{ height: '600px', position: 'relative' }} className="w-full"> 
-            <CircularGallery bend={3} textColor="#ffffff" borderRadius={0.05} />
+            <CircularGallery bend={0}  font-family="Funnel Display" textColor="#ffffff" borderRadius={0.05} /> 
           </div>
         <div className="flex justify-center w-full" id="interests">
             <ScrollFloat
@@ -241,8 +241,6 @@ export function StickyScrollRevealDemo() {
               <ParallaxScrollDemo />
         </div>
       </div>
-
-      
 
     </div>
   );
