@@ -54,39 +54,65 @@ const App = () => {
     },
   ];
 
-  useEffect(() => {
+    useEffect(() => {
     let mounted = true;
     let loadingInterval;
 
     const handleLoad = async () => {
-      // Start loading animation
       loadingInterval = setInterval(() => {
         setCurrentLoadingState(prev => (prev + 1) % loadingStates.length);
-      }, 2000); // Change message every 2 seconds
+      }, 2000);
 
       try {
-        // Start with loading assets
-        setProgress(25);
-        
-        // Wait for images to load
-        const images = document.querySelectorAll('img');
-        const imagePromises = Array.from(images).map(img => {
-          if (img.complete) return Promise.resolve();
-          return new Promise(resolve => {
-            img.onload = resolve;
-            img.onerror = resolve;
-          });
-        });
+        // Initial loading state
+        setProgress(10);
 
-        setProgress(50);
+        // Wait for all components to be ready
+        const componentPromises = [
+          // Hero component assets
+          new Promise(resolve => {
+            const heroImages = document.querySelectorAll('#home img');
+            Promise.all(
+              Array.from(heroImages).map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(imgResolve => {
+                  img.onload = imgResolve;
+                  img.onerror = imgResolve;
+                });
+              })
+            ).then(resolve);
+          }),
 
-        // Wait for fonts to load
-        await document.fonts.ready;
-        setProgress(75);
+          // ScrollVelocity fonts
+          document.fonts.ready,
 
-        // Wait for all images and other resources
-        await Promise.all([
-          ...imagePromises,
+          // StickyScrollRevealDemo images
+          new Promise(resolve => {
+            const stickyImages = document.querySelectorAll('.sticky-scroll-reveal img');
+            Promise.all(
+              Array.from(stickyImages).map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(imgResolve => {
+                  img.onload = imgResolve;
+                  img.onerror = imgResolve;
+                });
+              })
+            ).then(resolve);
+          }),
+
+          // MaskText component
+          new Promise(resolve => {
+            const maskTextElements = document.querySelectorAll('.mask-text');
+            if (maskTextElements.length > 0) resolve();
+          }),
+
+          // GoogleGeminiEffectDemo canvas
+          new Promise(resolve => {
+            const canvas = document.querySelector('#gemini-canvas');
+            if (canvas) resolve();
+          }),
+
+          // Wait for main document to be ready
           new Promise(resolve => {
             if (document.readyState === 'complete') {
               resolve();
@@ -94,14 +120,26 @@ const App = () => {
               window.addEventListener('load', resolve);
             }
           })
-        ]);
+        ];
 
-        setProgress(100);
+        // Update progress as components load
+        let loaded = 0;
+        const totalComponents = componentPromises.length;
+        
+        componentPromises.forEach(promise => {
+          promise.then(() => {
+            loaded++;
+            const progress = Math.floor((loaded / totalComponents) * 100);
+            setProgress(progress);
+          });
+        });
 
-        // Clear interval and finish loading
+        // Wait for all components to load
+        await Promise.all(componentPromises);
+
+        // Clear interval and finish loading with a smooth transition
         clearInterval(loadingInterval);
         
-        // Final delay for smooth transition
         setTimeout(() => {
           if (mounted) {
             setLoading(false);
@@ -110,6 +148,8 @@ const App = () => {
 
       } catch (error) {
         console.error('Loading error:', error);
+        // Fallback in case of error - still show the site
+        setLoading(false);
       }
     };
 
@@ -120,7 +160,7 @@ const App = () => {
       if (loadingInterval) clearInterval(loadingInterval);
     };
   }, []);
-
+  
 const loadingStates = [
   {
     text: "Booting up... (just like my brain during 8 AM lectures)",
