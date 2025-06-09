@@ -189,7 +189,7 @@ export function StickyScrollRevealDemo() {
         <StickyScroll content={content} /> 
         <div id="projects">
         <HeroParallaxDemo/> 
-        <div className="flex justify-center w-full mb-40" id="interests">
+        <div className="flex justify-center w-full mb-40">
             <ScrollFloat
               animationDuration={1}
               ease='back.inOut(2)'
@@ -239,7 +239,6 @@ export function StickyScrollRevealDemo() {
             </ScrollFloat>
         </div>
               <ParallaxScrollDemo />
-
         </div>
       </div>
 
