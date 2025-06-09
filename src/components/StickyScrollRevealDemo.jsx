@@ -220,7 +220,7 @@ export function StickyScrollRevealDemo() {
                         scrollEnd='bottom bottom-=40%'
                         stagger={0.03}
                       >
-                      Little wins that keep me going
+                      Little wins.
                       </ScrollFloat>
                   </div>
 
