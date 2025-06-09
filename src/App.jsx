@@ -19,12 +19,51 @@ import { GoogleGeminiEffectDemo } from './components/GoogleGeminiEffectDemo.jsx'
 import { MultiStepLoader } from './components/MultiStepLoader';
 
 const App = () => {
-  const velocity = 10; // Adjust the velocity as needed
+const velocity = 10;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const cvPath = "./assets/socials/Curriculum Vitae - Wilmargherix Castañeda.pdf";
   const [loading, setLoading] = useState(true); 
   const [progress, setProgress] = useState(0);
   const [currentLoadingState, setCurrentLoadingState] = useState(0);
+const loadingStates = [
+  {
+    text: "Booting up... (just like my brain during 8 AM lectures)",
+    progress: 0
+  },
+  {
+    text: "Checking for updates... (please don't be a last-minute assignment)",
+    progress: 15
+  },
+  {
+    text: "Compiling dependencies... (and my life choices)",
+    progress: 30
+  },
+  {
+    text: "Running tests... *fails* ...retrying (just like my algorithms class)",
+    progress: 45
+  },
+  {
+    text: "Debugging... (why did this work yesterday??)",
+    progress: 60
+  },
+  {
+    text: "Finalizing... (almost as stressful as thesis defense)",
+    progress: 75
+  },
+  {
+    text: "Graduation loading... (99.9% complete)",
+    progress: 90
+  }
+];
+
+const rareMessages = [
+  "LeetCode grind flashbacks...",
+  "Professor's voice: 'This will be on the final exam.'",
+  "404 Sleep Not Found",
+  "BRB, submitting a late assignment"
+];
+
+
 
 
   const navItems = [
@@ -57,8 +96,26 @@ const App = () => {
     useEffect(() => {
     let mounted = true;
     let loadingInterval;
+    let timeoutId;
+
+// Randomly inject a rare message at 50% progress
+if (Math.random() < 0.1) { // 10% chance
+  loadingStates.splice(3, 0, {
+    text: rareMessages[Math.floor(Math.random() * rareMessages.length)],
+    progress: 50
+  });
+}
 
     const handleLoad = async () => {
+
+      timeoutId = setTimeout(() => {
+        if (mounted && loading) {
+          console.log('Loading timed out, showing content');
+          clearInterval(loadingInterval);
+          setLoading(false);
+        }
+      }, 10000);
+
       loadingInterval = setInterval(() => {
         setCurrentLoadingState(prev => (prev + 1) % loadingStates.length);
       }, 2000);
@@ -146,9 +203,10 @@ const App = () => {
           }
         }, 500);
 
+       clearTimeout(timeoutId);
       } catch (error) {
         console.error('Loading error:', error);
-        // Fallback in case of error - still show the site
+        clearTimeout(timeoutId);
         setLoading(false);
       }
     };
@@ -157,55 +215,10 @@ const App = () => {
 
     return () => {
       mounted = false;
-      if (loadingInterval) clearInterval(loadingInterval);
+      clearInterval(loadingInterval);
+      clearTimeout(timeoutId);
     };
   }, []);
-  
-const loadingStates = [
-  {
-    text: "Booting up... (just like my brain during 8 AM lectures)",
-    progress: 0
-  },
-  {
-    text: "Checking for updates... (please don't be a last-minute assignment)",
-    progress: 15
-  },
-  {
-    text: "Compiling dependencies... (and my life choices)",
-    progress: 30
-  },
-  {
-    text: "Running tests... *fails* ...retrying (just like my algorithms class)",
-    progress: 45
-  },
-  {
-    text: "Debugging... (why did this work yesterday??)",
-    progress: 60
-  },
-  {
-    text: "Finalizing... (almost as stressful as thesis defense)",
-    progress: 75
-  },
-  {
-    text: "Graduation loading... (99.9% complete)",
-    progress: 90
-  }
-];
-
-const rareMessages = [
-  "LeetCode grind flashbacks...",
-  "Professor's voice: 'This will be on the final exam.'",
-  "404 Sleep Not Found",
-  "BRB, submitting a late assignment"
-];
-
-// Randomly inject a rare message at 50% progress
-if (Math.random() < 0.1) { // 10% chance
-  loadingStates.splice(3, 0, {
-    text: rareMessages[Math.floor(Math.random() * rareMessages.length)],
-    progress: 50
-  });
-}
 
   return (
     <>
