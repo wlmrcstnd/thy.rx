@@ -9,19 +9,22 @@ import {
   MobileNavMenu,
   MobileNavToggle 
 } from './components/Navbar.jsx'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Hero from './sections/Hero.jsx'
 import ScrollVelocity from './components/ScrollVelocity.jsx'
 import { MaskText } from './components/MaskText.jsx';
 import { StickyScrollRevealDemo } from './components/StickyScrollRevealDemo.jsx'
 import { HiDownload } from 'react-icons/hi'; // Add this import at the top
 import { GoogleGeminiEffectDemo } from './components/GoogleGeminiEffectDemo.jsx';
+import { MultiStepLoader } from './components/MultiStepLoader';
 
 const App = () => {
   const velocity = 10; // Adjust the velocity as needed
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const cvPath = "./assets/socials/Curriculum Vitae - Wilmargherix Castañeda.pdf";
-  
+  const [loading, setLoading] = useState(true); 
+  const [progress, setProgress] = useState(0);
+
   const navItems = [
     {
       name: "Home",
@@ -48,9 +51,108 @@ const App = () => {
       link: "#contacts",
     },
   ];
-return (
-  <>
-    <div className="container mx-auto">
+
+ useEffect(() => {
+    let mounted = true;
+
+    const handleLoad = async () => {
+      // Start with loading assets
+      setProgress(25);
+      
+      // Wait for images to load
+      const images = document.querySelectorAll('img');
+      const imagePromises = Array.from(images).map(img => {
+        if (img.complete) return Promise.resolve();
+        return new Promise(resolve => {
+          img.onload = resolve;
+          img.onerror = resolve; // Handle error case as well
+        });
+      });
+
+      setProgress(50);
+
+      // Wait for fonts to load
+      await document.fonts.ready;
+      setProgress(75);
+
+      // Wait for all images
+      await Promise.all(imagePromises);
+      setProgress(100);
+
+      // Final delay for smooth transition
+      setTimeout(() => {
+        if (mounted) {
+          setLoading(false);
+        }
+      }, 500);
+    };
+
+    // Start loading when component mounts
+    handleLoad();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+const loadingStates = [
+  {
+    text: "Booting up... (just like my brain during 8 AM lectures)",
+    progress: 0
+  },
+  {
+    text: "Checking for updates... (please don't be a last-minute assignment)",
+    progress: 15
+  },
+  {
+    text: "Compiling dependencies... (and my life choices)",
+    progress: 30
+  },
+  {
+    text: "Running tests... *fails* ...retrying (just like my algorithms class)",
+    progress: 45
+  },
+  {
+    text: "Debugging... (why did this work yesterday??)",
+    progress: 60
+  },
+  {
+    text: "Finalizing... (almost as stressful as thesis defense)",
+    progress: 75
+  },
+  {
+    text: "Graduation loading... (99.9% complete)",
+    progress: 90
+  }
+];
+
+const rareMessages = [
+  "LeetCode grind flashbacks...",
+  "Professor's voice: 'This will be on the final exam.'",
+  "404 Sleep Not Found",
+  "BRB, submitting a late assignment"
+];
+
+// Randomly inject a rare message at 50% progress
+if (Math.random() < 0.1) { // 10% chance
+  loadingStates.splice(3, 0, {
+    text: rareMessages[Math.floor(Math.random() * rareMessages.length)],
+    progress: 50
+  });
+}
+
+  return (
+    <>
+      <MultiStepLoader 
+        loadingStates={loadingStates}
+        loading={loading}
+        progress={progress}
+        duration={500} // Reduced duration for smoother transitions
+        loop={false}
+      />
+      
+      {!loading && (
+        <div className="w-full">
         <Navbar className="py-2 fixed top-0 left-0 right-0">
           <NavBody className="!py-2 !px-6">
             <NavbarLogo />
@@ -119,9 +221,10 @@ return (
         <GoogleGeminiEffectDemo />
       </div>
       
-    </div>
-  </>
-)
+      </div>
+      )}
+    </>
+  )
 }
 
 export default App
