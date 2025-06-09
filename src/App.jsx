@@ -24,6 +24,8 @@ const App = () => {
   const cvPath = "./assets/socials/Curriculum Vitae - Wilmargherix Castañeda.pdf";
   const [loading, setLoading] = useState(true); 
   const [progress, setProgress] = useState(0);
+  const [currentLoadingState, setCurrentLoadingState] = useState(0);
+
 
   const navItems = [
     {
@@ -52,46 +54,70 @@ const App = () => {
     },
   ];
 
- useEffect(() => {
+  useEffect(() => {
     let mounted = true;
+    let loadingInterval;
 
     const handleLoad = async () => {
-      // Start with loading assets
-      setProgress(25);
-      
-      // Wait for images to load
-      const images = document.querySelectorAll('img');
-      const imagePromises = Array.from(images).map(img => {
-        if (img.complete) return Promise.resolve();
-        return new Promise(resolve => {
-          img.onload = resolve;
-          img.onerror = resolve; // Handle error case as well
+      // Start loading animation
+      loadingInterval = setInterval(() => {
+        setCurrentLoadingState(prev => (prev + 1) % loadingStates.length);
+      }, 2000); // Change message every 2 seconds
+
+      try {
+        // Start with loading assets
+        setProgress(25);
+        
+        // Wait for images to load
+        const images = document.querySelectorAll('img');
+        const imagePromises = Array.from(images).map(img => {
+          if (img.complete) return Promise.resolve();
+          return new Promise(resolve => {
+            img.onload = resolve;
+            img.onerror = resolve;
+          });
         });
-      });
 
-      setProgress(50);
+        setProgress(50);
 
-      // Wait for fonts to load
-      await document.fonts.ready;
-      setProgress(75);
+        // Wait for fonts to load
+        await document.fonts.ready;
+        setProgress(75);
 
-      // Wait for all images
-      await Promise.all(imagePromises);
-      setProgress(100);
+        // Wait for all images and other resources
+        await Promise.all([
+          ...imagePromises,
+          new Promise(resolve => {
+            if (document.readyState === 'complete') {
+              resolve();
+            } else {
+              window.addEventListener('load', resolve);
+            }
+          })
+        ]);
 
-      // Final delay for smooth transition
-      setTimeout(() => {
-        if (mounted) {
-          setLoading(false);
-        }
-      }, 500);
+        setProgress(100);
+
+        // Clear interval and finish loading
+        clearInterval(loadingInterval);
+        
+        // Final delay for smooth transition
+        setTimeout(() => {
+          if (mounted) {
+            setLoading(false);
+          }
+        }, 500);
+
+      } catch (error) {
+        console.error('Loading error:', error);
+      }
     };
 
-    // Start loading when component mounts
     handleLoad();
 
     return () => {
       mounted = false;
+      if (loadingInterval) clearInterval(loadingInterval);
     };
   }, []);
 
@@ -147,8 +173,9 @@ if (Math.random() < 0.1) { // 10% chance
         loadingStates={loadingStates}
         loading={loading}
         progress={progress}
-        duration={500} // Reduced duration for smoother transitions
-        loop={false}
+        currentState={currentLoadingState}
+        duration={500}
+        loop={true}
       />
       
       {!loading && (
