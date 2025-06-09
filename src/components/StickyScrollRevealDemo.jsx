@@ -235,7 +235,7 @@ export function StickyScrollRevealDemo() {
               scrollEnd='bottom bottom-=40%'
               stagger={0.03}
             >
-              Yes, I shower AND touch grass.
+              Yes, I do other things too.
             </ScrollFloat>
         </div>
               <ParallaxScrollDemo />
