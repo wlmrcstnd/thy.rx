@@ -39,14 +39,6 @@ const loadingStates = [
     progress: 30
   },
   {
-    text: "Running tests... *fails* ...retrying (just like my algorithms class)",
-    progress: 45
-  },
-  {
-    text: "Debugging... (why did this work yesterday??)",
-    progress: 60
-  },
-  {
     text: "Finalizing... (almost as stressful as thesis defense)",
     progress: 75
   },
@@ -62,9 +54,6 @@ const rareMessages = [
   "404 Sleep Not Found",
   "BRB, submitting a late assignment"
 ];
-
-
-
 
   const navItems = [
     {
